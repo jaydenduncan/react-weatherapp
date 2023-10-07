@@ -56,11 +56,15 @@ html{
     margin-bottom: 0px;
 }
 
+.lowhighHeading{
+    margin-left: 5px;
+}
+
 .lowhighHeading p{
     display: inline-block;
     font-weight: 300;
     font-size: 15px;
-    padding: 0px 10px;
+    padding: 0px 11px;
     margin-bottom: 0px;
 }
 

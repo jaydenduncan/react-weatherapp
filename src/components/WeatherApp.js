@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import './WeatherApp.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 import clear_night_icon from './images/clear_night.png';
 import cloudy_icon from './images/cloudy.png';
 import lightning_icon from './images/lightning.png';
@@ -23,6 +24,11 @@ function WeatherApp() {
         SUNNY: "Sunny"
     };
 
+    const Scale = {
+        FAHRENHEIT: 'F',
+        CELSIUS: 'C'
+    };
+
     const [city, setCity] = useState("");
     const [currentTemp, setCurrentTemp] = useState(0);
     const [lowTemp, setLowTemp] = useState(0);
@@ -31,6 +37,7 @@ function WeatherApp() {
     const [iconDesc, setIconDesc] = useState(Weather.SUNNY);
     const [windSpeed, setWindSpeed] = useState(0);
     const [humidity, setHumidity] = useState(0);
+    const [tempSetting, setTempSetting] = useState(Scale.CELSIUS);
 
     // Define API settings
     let options = {
@@ -38,16 +45,53 @@ function WeatherApp() {
         headers: {'x-api-key':process.env.REACT_APP_API_KEY}
     };
 
+    // Convert temperature from celsius to fahrenheit or vice versa
+    const convert = (e) => {
+        if(e.target.value == Scale.FAHRENHEIT){
+            let newCurrentTemp = ((currentTemp * 9) / 5) + 32;
+            let newLowTemp = ((lowTemp * 9) / 5) + 32;
+            let newHighTemp = ((highTemp * 9) / 5) + 32;
+
+            setCurrentTemp(newCurrentTemp);
+            setLowTemp(newLowTemp);
+            setHighTemp(newHighTemp);
+            setTempSetting(Scale.FAHRENHEIT);
+        }
+        else if(e.target.value == Scale.CELSIUS){
+            let newCurrentTemp = ((currentTemp - 32) * 5) / 9;
+            let newLowTemp = ((lowTemp - 32) * 5) / 9;
+            let newHighTemp = ((highTemp - 32) * 5) / 9;
+
+            setCurrentTemp(newCurrentTemp);
+            setLowTemp(newLowTemp);
+            setHighTemp(newHighTemp);
+            setTempSetting(Scale.CELSIUS);
+        }
+    }
+
     // Update screen to match new data
     const updateScreen = (data, inputCity) => {
         setCity(inputCity);
-        setCurrentTemp(data["temp"]);
-        setLowTemp(data["min_temp"]);
-        setHighTemp(data["max_temp"]);
+
+        if(tempSetting == Scale.FAHRENHEIT){
+            let newCurrentTemp = ((data["temp"] * 9) / 5) + 32;
+            let newLowTemp = ((data["min_temp"] * 9) / 5) + 32;
+            let newHighTemp = ((data["max_temp"] * 9) / 5) + 32;
+
+            setCurrentTemp(newCurrentTemp);
+            setLowTemp(newLowTemp);
+            setHighTemp(newHighTemp);
+        }
+        else{
+            setCurrentTemp(data["temp"]);
+            setLowTemp(data["min_temp"]);
+            setHighTemp(data["max_temp"]);
+        }
+
         setWindSpeed(Math.floor(data["wind_speed"]));
         setHumidity(data["humidity"]);
 
-        document.getElementById("inputCity").value = "";
+        document.getElementById("inputCity").value = ""; // clear input textbox
     };
 
     // Initialize screen with data
@@ -89,6 +133,11 @@ function WeatherApp() {
     return (
         <div className="container">
             <p className="appHeading">React Weather App</p>
+            <select className="settingMenu" onChange={convert}>
+                <option value='' disabled>Temp Setting</option>
+                <option value='C'>&deg;C</option>
+                <option value='F'>&deg;F</option>
+            </select>
             <div className="searchSection">
                 <input id="inputCity" type="text" placeholder="Search a city"/>
                 <div className="searchBtn" onClick={getWeatherInfo}>
@@ -96,15 +145,15 @@ function WeatherApp() {
                 </div>
             </div>
             <p className="cityName">{city}</p>
-            <p className="currentTemp">{currentTemp}&deg;C</p>
+            <p className="currentTemp">{Math.round(currentTemp)}&deg;{tempSetting}</p>
             <div className="lowhighHeading">
                 <p>Low</p>
                 <p>High</p>
             </div>
             <div className="lowhighTemps">
-                <p>{lowTemp}&deg;C</p>
+                <p>{Math.round(lowTemp)}&deg;{tempSetting}</p>
                 <p>/</p>
-                <p>{highTemp}&deg;C</p>
+                <p>{Math.round(highTemp)}&deg;{tempSetting}</p>
             </div>
             <div className="weatherIconSpace">
                 <img className="weatherIcon" src={icon} alt="Sunny Icon" />

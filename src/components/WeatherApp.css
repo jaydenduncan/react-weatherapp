@@ -16,6 +16,16 @@ html{
 .appHeading{
     font-weight: 300;
     font-size: 35px;
+    margin-bottom: 30px;
+}
+
+.settingMenu{
+    border: 3px solid black;
+    border-radius: 5px;
+    height: 40px;
+    margin-left: 10px;
+    padding: 5px;
+    font-size: 15px;
 }
 
 .searchSection input{
@@ -24,6 +34,7 @@ html{
     height: 35px;
     width: 275px;
     font-size: 15px;
+    margin-top: 10px;
     padding-left: 10px;
 }
 
@@ -47,12 +58,13 @@ html{
 .cityName{
     font-weight: 400;
     font-size: 38px;
+    margin-top: 20px;
 }
 
 .currentTemp{
     font-weight: 700;
     font-size: 65px;
-    margin-top: 5px;
+    margin-top: 0px;
     margin-bottom: 0px;
 }
 
@@ -80,8 +92,8 @@ html{
 }
 
 .weatherIcon{
-    height: 150px;
-    width: 150px;
+    height: 125px;
+    width: 125px;
 }
 
 .weatherIconDesc{

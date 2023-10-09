@@ -38,6 +38,7 @@ function WeatherApp() {
     const [windSpeed, setWindSpeed] = useState(0);
     const [humidity, setHumidity] = useState(0);
     const [tempSetting, setTempSetting] = useState(Scale.CELSIUS);
+    const [loading, setLoading] = useState(false);
 
     // Define API settings
     let options = {
@@ -96,6 +97,8 @@ function WeatherApp() {
 
     // Initialize screen with data
     const initialize = () => {
+        setLoading(true);
+
         fetch('https://api.api-ninjas.com/v1/weather?city=London', options)
         .then(response => response.json())
         .then(data => {
@@ -106,11 +109,14 @@ function WeatherApp() {
                 updateScreen(data, 'London');
             }
         })
+        .then(() => setLoading(false))
         .catch(err => console.log(`error ${err}`));
     };
 
     // Fetch weather data from API
     const getWeatherInfo = () => {
+        setLoading(true);
+
         let inputCity = document.getElementById("inputCity").value;
 
         fetch(`https://api.api-ninjas.com/v1/weather?city=${inputCity}`, options)
@@ -123,6 +129,7 @@ function WeatherApp() {
                 updateScreen(data, inputCity);
             }
         })
+        .then(() => setLoading(false))
         .catch(err => console.log(`error ${err}`));
     };
 
@@ -130,7 +137,36 @@ function WeatherApp() {
         initialize();
     }, []);
 
-    return (
+    return loading ? (
+        <div className="container">
+            <p className="appHeading">React Weather App</p>
+            <select className="settingMenu" onChange={convert}>
+                <option value='' disabled>Temp Setting</option>
+                <option value='C'>&deg;C</option>
+                <option value='F'>&deg;F</option>
+            </select>
+            <div className="searchSection">
+                <input id="inputCity" type="text" placeholder="Search a city"/>
+                <div className="searchBtn" onClick={getWeatherInfo}>
+                    <FontAwesomeIcon className="searchIcon" icon={faMagnifyingGlass} />
+                </div>
+            </div>
+            <div className="loadingSection">
+                <p>Loading...</p>
+            </div>
+            <div className="extraInfo">
+                <div className="windSpeed">
+                    <p className="windSpeedHeading">Wind Speed</p>
+                    <p className="windSpeedVal">...</p>
+                    <p>mph</p>
+                </div>
+                <div className="humidity">
+                    <p className="humidityHeading">Humidity</p>
+                    <p className="humidityVal">...</p>
+                </div>
+            </div>
+        </div>
+    ) : (
         <div className="container">
             <p className="appHeading">React Weather App</p>
             <select className="settingMenu" onChange={convert}>

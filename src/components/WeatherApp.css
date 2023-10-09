@@ -55,6 +55,12 @@ html{
     color: black;
 }
 
+.loadingSection p{
+    font-weight: 400;
+    font-size: 38px;
+    margin-top: 20px;
+}
+
 .cityName{
     font-weight: 400;
     font-size: 38px;

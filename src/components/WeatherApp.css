@@ -30,12 +30,41 @@ html{
 
 .searchSection input{
     border: 1px solid black;
-    border-radius: 10px;
     height: 35px;
-    width: 275px;
+    width: 288px;
     font-size: 15px;
     margin-top: 10px;
     padding-left: 10px;
+}
+
+.searchSection .searchResultSection{
+    position: relative;
+    display: inline-block;
+}
+
+.searchSection .searchResults{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-100%);
+    margin-top: 14px;
+    margin-left: 0px;
+}
+
+.searchSection .searchResults p{
+    height: 50px;
+    width: 300px;
+    background-color: #737880;
+    color: black;
+    opacity: 0.9;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 0px;
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+.searchSection .searchResults p:hover{
+    background-color: #abbcd6;
 }
 
 .searchSection .searchBtn{

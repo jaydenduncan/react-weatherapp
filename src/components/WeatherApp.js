@@ -11,6 +11,7 @@ import rainy_icon from './images/rainy.png';
 import snowy_icon from './images/snowy.png';
 import stormy_icon from './images/stormy.png';
 import sunny_icon from './images/sunny.png';
+import { EventListenerTypes } from "typeorm/metadata/types/EventListenerTypes";
 
 function WeatherApp() {
     const Weather = {
@@ -41,10 +42,7 @@ function WeatherApp() {
     const [loading, setLoading] = useState(false);
 
     // Define API settings
-    let options = {
-        method: 'GET',
-        headers: {'x-api-key':process.env.REACT_APP_API_KEY}
-    };
+    const API_KEY = process.env.REACT_APP_API_KEY;
 
     // Convert temperature from celsius to fahrenheit or vice versa
     const convert = (e) => {
@@ -70,67 +68,140 @@ function WeatherApp() {
         }
     }
 
+    // Show filtered results of city input
+    const showResults = () => {
+        var cityInput = document.getElementById("inputCity").value;
+        var searchResultSection = document.getElementById("searchResultSection");
+
+        function removeChildren() {
+            if(document.getElementById("searchResults")){
+                let searchResultsDiv = document.getElementById("searchResults");
+
+                var child = searchResultsDiv.lastElementChild;
+                while(child){
+                    searchResultsDiv.removeChild(child);
+                    child = searchResultsDiv.lastElementChild;
+                }
+            }
+        }
+
+        if(!document.getElementById("searchResults")){
+            var searchResultsDiv = document.createElement("div");
+            
+            searchResultsDiv.id = "searchResults";
+            searchResultsDiv.className = "searchResults";
+            searchResultsDiv.style.display = "none";
+            searchResultSection.appendChild(searchResultsDiv);
+        }
+        else{
+            var searchResultsDiv = document.getElementById("searchResults");
+
+            fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=5&appid=${API_KEY}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data["cod"] || data.length === 0){
+                    removeChildren();
+
+                    if(!document.getElementById("noResultsText")){
+                        let p1 = document.createElement("p");
+                        p1.id = "noResultsText";
+                        p1.innerHTML = "No results found.";
+                        searchResultsDiv.appendChild(p1);
+                    }
+                }
+                else{
+                    removeChildren();
+
+                    for(var city of data){
+                        let p = document.createElement("p");
+                        p.innerHTML = `${city["name"]}, ${city["state"] ? city["state"] : ""} ${city["country"]}`;
+                        searchResultsDiv.appendChild(p);
+                    }
+                }
+            })
+            .catch(err => console.log(`error ${err}`));
+
+            searchResultsDiv.style.display = "initial"; // display results on screen
+        }
+    };
+
+    // Hide search results when text box is not in focus
+    const hideResults = () => {
+        var searchResultsDiv = document.getElementById("searchResults");
+    
+        if(searchResultsDiv){
+            searchResultsDiv.style.display = "none";
+        }
+    };
+
     // Update screen to match new data
-    const updateScreen = (data, inputCity) => {
-        setCity(inputCity);
+    const updateScreen = (data) => {
+        setCity(data["name"]);
 
         if(tempSetting == Scale.FAHRENHEIT){
-            let newCurrentTemp = ((data["temp"] * 9) / 5) + 32;
-            let newLowTemp = ((data["min_temp"] * 9) / 5) + 32;
-            let newHighTemp = ((data["max_temp"] * 9) / 5) + 32;
+            // Set current temp, low temp, and high temp in degrees fahrenheit
+            let newCurrentTemp = ((data["main"]["temp"] - 273.15) * 1.8) + 32;
+            let newLowTemp = ((data["main"]["temp_min"] - 273.15) * 1.8) + 32;
+            let newHighTemp = ((data["main"]["temp_max"] - 273.15) * 1.8) + 32;
 
             setCurrentTemp(newCurrentTemp);
             setLowTemp(newLowTemp);
             setHighTemp(newHighTemp);
         }
         else{
-            setCurrentTemp(data["temp"]);
-            setLowTemp(data["min_temp"]);
-            setHighTemp(data["max_temp"]);
+            // Set current temp, low temp, and high temp in degrees celsius
+            let newCurrentTemp = data["main"]["temp"] - 273.15;
+            let newLowTemp = data["main"]["temp_min"] - 273.15;
+            let newHighTemp = data["main"]["temp_max"] - 273.15;
+
+            setCurrentTemp(newCurrentTemp);
+            setLowTemp(newLowTemp);
+            setHighTemp(newHighTemp);
         }
 
-        setWindSpeed(Math.floor(data["wind_speed"]));
-        setHumidity(data["humidity"]);
+        // Set wind speed
+        setWindSpeed(Math.floor(data["wind"]["speed"]));
 
-        document.getElementById("inputCity").value = ""; // clear input textbox
+        // Set humidity
+        setHumidity(data["main"]["humidity"]);
+
+        // clear input textbox
+        document.getElementById("inputCity").value = "";
     };
 
     // Initialize screen with data
     const initialize = () => {
         setLoading(true);
 
-        fetch('https://api.api-ninjas.com/v1/weather?city=London', options)
+        fetch(`http://api.openweathermap.org/geo/1.0/direct?q=Cupertino&limit=5&appid=${API_KEY}`)
         .then(response => response.json())
         .then(data => {
             if(data["error"]){
-                alert('ERROR: Something went wrong');
+                alert('ERROR: Something went wrong.');
             }
             else{
-                updateScreen(data, 'London');
+                fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${data[0]['lat']}&lon=${data[0]['lon']}&appid=${API_KEY}`)
+                .then(response => response.json())
+                .then(data => {
+                    if(data["error"]){
+                        alert('ERROR: Something went wrong.');
+                    }
+                    else{
+                        updateScreen(data);
+                    }
+                })
+                .then(() => setLoading(false))
+                .catch(err => console.log(`error ${err}`));
             }
         })
-        .then(() => setLoading(false))
         .catch(err => console.log(`error ${err}`));
-    };
+    }
 
     // Fetch weather data from API
     const getWeatherInfo = () => {
         setLoading(true);
 
         let inputCity = document.getElementById("inputCity").value;
-
-        fetch(`https://api.api-ninjas.com/v1/weather?city=${inputCity}`, options)
-        .then(response => response.json())
-        .then(data => {
-            if(data["error"]){
-                alert('ERROR: Please enter a valid city.');
-            }
-            else{
-                updateScreen(data, inputCity);
-            }
-        })
-        .then(() => setLoading(false))
-        .catch(err => console.log(`error ${err}`));
     };
 
     useEffect(() => {
@@ -175,7 +246,10 @@ function WeatherApp() {
                 <option value='F'>&deg;F</option>
             </select>
             <div className="searchSection">
-                <input id="inputCity" type="text" placeholder="Search a city"/>
+                <input id="inputCity" type="text" placeholder="Search a city" onInput={showResults} onBlur={hideResults}/>
+                <div id="searchResultSection" className="searchResultSection">
+
+                </div>
                 <div className="searchBtn" onClick={getWeatherInfo}>
                     <FontAwesomeIcon className="searchIcon" icon={faMagnifyingGlass} />
                 </div>

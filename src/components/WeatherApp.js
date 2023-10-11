@@ -14,17 +14,6 @@ import sunny_icon from './images/sunny.png';
 import { EventListenerTypes } from "typeorm/metadata/types/EventListenerTypes";
 
 function WeatherApp() {
-    const Weather = {
-        CLEAR: "Clear",
-        CLOUDY: "Cloudy",
-        LIGHTNING: "Lightning",
-        PARTLY_CLOUDY: "Partly Cloudy",
-        RAINY: "Rain",
-        SNOWY: "Snow",
-        STORMY: "Storm",
-        SUNNY: "Sunny"
-    };
-
     const Scale = {
         FAHRENHEIT: 'F',
         CELSIUS: 'C'
@@ -34,8 +23,8 @@ function WeatherApp() {
     const [currentTemp, setCurrentTemp] = useState(0);
     const [lowTemp, setLowTemp] = useState(0);
     const [highTemp, setHighTemp] = useState(0);
-    const [icon, setIcon] = useState(sunny_icon);
-    const [iconDesc, setIconDesc] = useState(Weather.SUNNY);
+    const [icon, setIcon] = useState("01d");
+    const [iconDesc, setIconDesc] = useState("sunny");
     const [windSpeed, setWindSpeed] = useState(0);
     const [humidity, setHumidity] = useState(0);
     const [tempSetting, setTempSetting] = useState(Scale.CELSIUS);
@@ -85,17 +74,7 @@ function WeatherApp() {
             }
         }
 
-        if(!document.getElementById("searchResults")){
-            var searchResultsDiv = document.createElement("div");
-            
-            searchResultsDiv.id = "searchResults";
-            searchResultsDiv.className = "searchResults";
-            searchResultsDiv.style.display = "none";
-            searchResultSection.appendChild(searchResultsDiv);
-        }
-        else{
-            var searchResultsDiv = document.getElementById("searchResults");
-
+        function fetchData() {
             fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=5&appid=${API_KEY}`)
             .then(response => response.json())
             .then(data => {
@@ -116,12 +95,38 @@ function WeatherApp() {
                         let p = document.createElement("p");
                         p.innerHTML = `${city["name"]}, ${city["state"] ? city["state"] : ""} ${city["country"]}`;
                         searchResultsDiv.appendChild(p);
+
+                        // Hook 'click' event to each paragraph element with respective city data
+                        p.onmousedown = (function(){
+                            let cityInfo = city;
+
+                            return function(){
+                                searchResultsDiv.style.display = "none";
+                                getWeatherInfo(cityInfo);
+                            };
+                        })();
                     }
-                }
+                } 
             })
             .catch(err => console.log(`error ${err}`));
 
             searchResultsDiv.style.display = "initial"; // display results on screen
+        }
+
+        if(!document.getElementById("searchResults")){
+            var searchResultsDiv = document.createElement("div");
+            
+            searchResultsDiv.id = "searchResults";
+            searchResultsDiv.className = "searchResults";
+            searchResultsDiv.style.display = "none";
+            searchResultSection.appendChild(searchResultsDiv);
+
+            fetchData();
+        }
+        else{
+            var searchResultsDiv = document.getElementById("searchResults");
+
+            fetchData();
         }
     };
 
@@ -159,6 +164,12 @@ function WeatherApp() {
             setHighTemp(newHighTemp);
         }
 
+        // Set weather icon
+        setIcon(data["weather"][0]["icon"]);
+
+        // Set weather description
+        setIconDesc(data["weather"][0]["main"]);
+
         // Set wind speed
         setWindSpeed(Math.floor(data["wind"]["speed"]));
 
@@ -176,14 +187,14 @@ function WeatherApp() {
         fetch(`http://api.openweathermap.org/geo/1.0/direct?q=Cupertino&limit=5&appid=${API_KEY}`)
         .then(response => response.json())
         .then(data => {
-            if(data["error"]){
+            if(data.length === 0){
                 alert('ERROR: Something went wrong.');
             }
             else{
                 fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${data[0]['lat']}&lon=${data[0]['lon']}&appid=${API_KEY}`)
                 .then(response => response.json())
                 .then(data => {
-                    if(data["error"]){
+                    if(data.length === 0){
                         alert('ERROR: Something went wrong.');
                     }
                     else{
@@ -198,10 +209,49 @@ function WeatherApp() {
     }
 
     // Fetch weather data from API
-    const getWeatherInfo = () => {
+    const getWeatherInfo = (cityInfo) => {
         setLoading(true);
 
-        let inputCity = document.getElementById("inputCity").value;
+        if(!cityInfo['lat'] || !cityInfo['lon']){
+            let inputCity = document.getElementById("inputCity").value;
+
+            fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${inputCity}&limit=5&appid=${API_KEY}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.length === 0){
+                    alert('ERROR: Something went wrong.');
+                }
+                else{
+                    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${data[0]['lat']}&lon=${data[0]['lon']}&appid=${API_KEY}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.length === 0){
+                            alert('ERROR: Something went wrong.');
+                        }
+                        else{
+                            updateScreen(data);
+                        }
+                    })
+                    .then(() => setLoading(false))
+                    .catch(err => console.log(`error ${err}`));
+                }
+            })
+            .catch(err => console.log(`error ${err}`));
+        }
+        else{
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${cityInfo['lat']}&lon=${cityInfo['lon']}&appid=${API_KEY}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.length === 0){
+                    alert('ERROR: Something went wrong.');
+                }
+                else{
+                    updateScreen(data);
+                }
+            })
+            .then(() => setLoading(false))
+            .catch(err => console.log(`error ${err}`));
+        }
     };
 
     useEffect(() => {
@@ -218,7 +268,7 @@ function WeatherApp() {
             </select>
             <div className="searchSection">
                 <input id="inputCity" type="text" placeholder="Search a city"/>
-                <div className="searchBtn" onClick={getWeatherInfo}>
+                <div className="searchBtn" onClick={() => getWeatherInfo("")}>
                     <FontAwesomeIcon className="searchIcon" icon={faMagnifyingGlass} />
                 </div>
             </div>
@@ -266,7 +316,7 @@ function WeatherApp() {
                 <p>{Math.round(highTemp)}&deg;{tempSetting}</p>
             </div>
             <div className="weatherIconSpace">
-                <img className="weatherIcon" src={icon} alt="Sunny Icon" />
+                <img className="weatherIcon" src={`http://openweathermap.org/img/w/${icon}.png`} alt="Sunny Icon" />
                 <p className="weatherIconDesc">{iconDesc}</p>
             </div>
             <div className="extraInfo">

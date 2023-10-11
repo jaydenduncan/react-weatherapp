@@ -121,12 +121,18 @@ function WeatherApp() {
             searchResultsDiv.style.display = "none";
             searchResultSection.appendChild(searchResultsDiv);
 
-            fetchData();
+            if(cityInput)
+                fetchData();
+            else
+                hideResults();
         }
         else{
             var searchResultsDiv = document.getElementById("searchResults");
 
-            fetchData();
+            if(cityInput)
+                fetchData();
+            else
+                hideResults();
         }
     };
 
@@ -215,28 +221,34 @@ function WeatherApp() {
         if(!cityInfo['lat'] || !cityInfo['lon']){
             let inputCity = document.getElementById("inputCity").value;
 
-            fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${inputCity}&limit=5&appid=${API_KEY}`)
-            .then(response => response.json())
-            .then(data => {
-                if(data.length === 0){
-                    alert('ERROR: Something went wrong.');
-                }
-                else{
-                    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${data[0]['lat']}&lon=${data[0]['lon']}&appid=${API_KEY}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if(data.length === 0){
-                            alert('ERROR: Something went wrong.');
-                        }
-                        else{
-                            updateScreen(data);
-                        }
-                    })
-                    .then(() => setLoading(false))
-                    .catch(err => console.log(`error ${err}`));
-                }
-            })
-            .catch(err => console.log(`error ${err}`));
+            if(inputCity){
+                fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${inputCity}&limit=5&appid=${API_KEY}`)
+                .then(response => response.json())
+                .then(data => {
+                    if(data.length === 0){
+                        alert('ERROR: Something went wrong.');
+                    }
+                    else{
+                        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${data[0]['lat']}&lon=${data[0]['lon']}&appid=${API_KEY}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if(data.length === 0){
+                                alert('ERROR: Something went wrong.');
+                            }
+                            else{
+                                updateScreen(data);
+                            }
+                        })
+                        .then(() => setLoading(false))
+                        .catch(err => console.log(`error ${err}`));
+                    }
+                })
+                .catch(err => console.log(`error ${err}`));
+            }
+            else{
+                alert("ERROR: Enter a city.");
+                setLoading(false);
+            }
         }
         else{
             fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${cityInfo['lat']}&lon=${cityInfo['lon']}&appid=${API_KEY}`)
@@ -300,7 +312,7 @@ function WeatherApp() {
                 <div id="searchResultSection" className="searchResultSection">
 
                 </div>
-                <div className="searchBtn" onClick={getWeatherInfo}>
+                <div className="searchBtn" onClick={() => getWeatherInfo("")}>
                     <FontAwesomeIcon className="searchIcon" icon={faMagnifyingGlass} />
                 </div>
             </div>

@@ -2,16 +2,6 @@ import React, { useState, useEffect } from "react";
 import './WeatherApp.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-import clear_night_icon from './images/clear_night.png';
-import cloudy_icon from './images/cloudy.png';
-import lightning_icon from './images/lightning.png';
-import partly_cloudy_icon from './images/partly_cloudy.png';
-import rainy_icon from './images/rainy.png';
-import snowy_icon from './images/snowy.png';
-import stormy_icon from './images/stormy.png';
-import sunny_icon from './images/sunny.png';
-import { EventListenerTypes } from "typeorm/metadata/types/EventListenerTypes";
 
 function WeatherApp() {
     const Scale = {
@@ -30,7 +20,7 @@ function WeatherApp() {
     const [tempSetting, setTempSetting] = useState(Scale.CELSIUS);
     const [loading, setLoading] = useState(false);
 
-    // Define API settings
+    // Store API key
     const API_KEY = process.env.REACT_APP_API_KEY;
 
     // Convert temperature from celsius to fahrenheit or vice versa

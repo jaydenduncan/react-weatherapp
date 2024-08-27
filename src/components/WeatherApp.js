@@ -3,17 +3,61 @@ import './WeatherApp.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
+import SUNNY from './images/day/sunny.png';
+import DAY_PARTLY_CLOUDY from './images/day/partly_cloudy.png';
+import DAY_CLOUDY from './images/day/cloudy.png';
+import DAY_BROKEN_CLOUDS from './images/day/broken_clouds.png';
+import DAY_SHOWER_RAIN from './images/day/shower_rain.png';
+import DAY_RAIN from './images/day/rain.png';
+import DAY_TSTORM from './images/day/stormy.png';
+import DAY_SNOW from './images/day/snowy.png';
+import DAY_MIST from './images/day/mist.png';
+
+import NIGHT_CLEAR from './images/night/clear_night.png';
+import NIGHT_PARTLY_CLOUDY from './images/night/partly_cloudy.png';
+import NIGHT_CLOUDY from './images/night/cloudy.png';
+import NIGHT_BROKEN_CLOUDS from './images/night/broken_clouds.png';
+import NIGHT_SHOWER_RAIN from './images/night/shower_rain.png';
+import NIGHT_RAIN from './images/night/rain.png';
+import NIGHT_TSTORM from './images/night/stormy.png';
+import NIGHT_SNOW from './images/night/snowy.png';
+import NIGHT_MIST from './images/night/mist.png';
+
 function WeatherApp() {
     const Scale = {
         FAHRENHEIT: 'F',
         CELSIUS: 'C'
     };
 
+    const DAY_ICON = {
+        "01d": SUNNY,
+        "02d": DAY_PARTLY_CLOUDY,
+        "03d": DAY_CLOUDY,
+        "04d": DAY_BROKEN_CLOUDS,
+        "09d": DAY_SHOWER_RAIN,
+        "10d": DAY_RAIN,
+        "11d": DAY_TSTORM,
+        "13d": DAY_SNOW,
+        "50d": DAY_MIST
+    };
+
+    const NIGHT_ICON = {
+        "01n": NIGHT_CLEAR,
+        "02n": NIGHT_PARTLY_CLOUDY,
+        "03n": NIGHT_CLOUDY,
+        "04n": NIGHT_BROKEN_CLOUDS,
+        "09n": NIGHT_SHOWER_RAIN,
+        "10n": NIGHT_RAIN,
+        "11n": NIGHT_TSTORM,
+        "13n": NIGHT_SNOW,
+        "50n": NIGHT_MIST
+    };
+
     const [city, setCity] = useState("");
     const [currentTemp, setCurrentTemp] = useState(0);
     const [lowTemp, setLowTemp] = useState(0);
     const [highTemp, setHighTemp] = useState(0);
-    const [icon, setIcon] = useState("01d");
+    const [icon, setIcon] = useState(DAY_ICON["01d"]);
     const [iconDesc, setIconDesc] = useState("sunny");
     const [windSpeed, setWindSpeed] = useState(0);
     const [humidity, setHumidity] = useState(0);
@@ -161,7 +205,13 @@ function WeatherApp() {
         }
 
         // Set weather icon
-        setIcon(data["weather"][0]["icon"]);
+        let icon_code = data["weather"][0]["icon"];
+        if(icon_code[icon_code.length-1] === "d"){
+            setIcon(DAY_ICON[icon_code]);
+        }
+        else if(icon_code[icon_code.length-1] === "n"){
+            setIcon(NIGHT_ICON[icon_code]);
+        }
 
         // Set weather description
         setIconDesc(data["weather"][0]["main"]);
@@ -318,7 +368,7 @@ function WeatherApp() {
                 <p>{Math.round(highTemp)}&deg;{tempSetting}</p>
             </div>
             <div className="weatherIconSpace">
-                <img className="weatherIcon" src={`http://openweathermap.org/img/w/${icon}.png`} alt="Sunny Icon" />
+                <img className="weatherIcon" src={icon} alt="Weather Icon" />
                 <p className="weatherIconDesc">{iconDesc}</p>
             </div>
             <div className="extraInfo">

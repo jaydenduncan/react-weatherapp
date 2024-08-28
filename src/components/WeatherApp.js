@@ -341,7 +341,6 @@ function WeatherApp() {
         </div>
     ) : (
         <div className="container">
-            <p className="appHeading">React Weather App</p>
             <select className="settingMenu" onChange={convert}>
                 <option value='' disabled>Temp Setting</option>
                 <option value='C'>&deg;C</option>

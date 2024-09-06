@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import './WeatherApp.css';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+
+import Settings from "./Settings";
+import SearchBar from "./SearchBar";
+import MainInfo from "./MainInfo";
+import SideInfo from "./SideInfo";
 
 import SUNNY from './images/day/sunny.png';
 import DAY_PARTLY_CLOUDY from './images/day/partly_cloudy.png';
@@ -312,75 +315,20 @@ function WeatherApp() {
 
     return loading ? (
         <div className="container">
-            <p className="appHeading">React Weather App</p>
-            <select className="settingMenu" onChange={convert}>
-                <option value='' disabled>Temp Setting</option>
-                <option value='C'>&deg;C</option>
-                <option value='F'>&deg;F</option>
-            </select>
-            <div className="searchSection">
-                <input id="inputCity" type="text" placeholder="Search a city"/>
-                <div className="searchBtn" onClick={() => getWeatherInfo("")}>
-                    <FontAwesomeIcon className="searchIcon" icon={faMagnifyingGlass} />
-                </div>
-            </div>
+            <Settings />
+            <SearchBar getWeatherInfo={getWeatherInfo}/>
             <div className="loadingSection">
                 <p>Loading...</p>
             </div>
-            <div className="extraInfo">
-                <div className="windSpeed">
-                    <p className="windSpeedHeading">Wind Speed</p>
-                    <p className="windSpeedVal">...</p>
-                    <p>mph</p>
-                </div>
-                <div className="humidity">
-                    <p className="humidityHeading">Humidity</p>
-                    <p className="humidityVal">...</p>
-                </div>
-            </div>
+            <SideInfo loading={true} />
         </div>
     ) : (
         <div className="container">
-            <select className="settingMenu" onChange={convert}>
-                <option value='' disabled>Temp Setting</option>
-                <option value='C'>&deg;C</option>
-                <option value='F'>&deg;F</option>
-            </select>
-            <div className="searchSection">
-                <input id="inputCity" type="text" placeholder="Search a city" onInput={showResults} onBlur={hideResults}/>
-                <div id="searchResultSection" className="searchResultSection">
-
-                </div>
-                <div className="searchBtn" onClick={() => getWeatherInfo("")}>
-                    <FontAwesomeIcon className="searchIcon" icon={faMagnifyingGlass} />
-                </div>
-            </div>
-            <p className="cityName">{city}</p>
-            <p className="currentTemp">{Math.round(currentTemp)}&deg;{tempSetting}</p>
-            <div className="lowhighHeading">
-                <p>Low</p>
-                <p>High</p>
-            </div>
-            <div className="lowhighTemps">
-                <p>{Math.round(lowTemp)}&deg;{tempSetting}</p>
-                <p>/</p>
-                <p>{Math.round(highTemp)}&deg;{tempSetting}</p>
-            </div>
-            <div className="weatherIconSpace">
-                <img className="weatherIcon" src={icon} alt="Weather Icon" />
-                <p className="weatherIconDesc">{iconDesc}</p>
-            </div>
-            <div className="extraInfo">
-                <div className="windSpeed">
-                    <p className="windSpeedHeading">Wind Speed</p>
-                    <p className="windSpeedVal">{windSpeed}</p>
-                    <p>mph</p>
-                </div>
-                <div className="humidity">
-                    <p className="humidityHeading">Humidity</p>
-                    <p className="humidityVal">{humidity}&#37;</p>
-                </div>
-            </div>
+            <Settings convert={convert} />
+            <SearchBar getWeatherInfo={getWeatherInfo} showResults={showResults} hideResults={hideResults} />
+            <MainInfo city={city} currentTemp={currentTemp} tempSetting={tempSetting} 
+                        lowTemp={lowTemp} highTemp={highTemp} icon={icon} iconDesc={iconDesc} />
+            <SideInfo windSpeed={windSpeed} humidity={humidity} loading={false} />
         </div>
     );
 }

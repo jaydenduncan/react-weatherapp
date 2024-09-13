@@ -1,0 +1,10 @@
+.extraInfo{
+    height: 200px;
+    width: 900px;
+    color: white;
+    background-color: #000000;
+    opacity: 0.9;
+    margin: auto;
+    margin-top: 30px;
+    border-radius: 10px;
+}

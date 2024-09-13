@@ -1,0 +1,16 @@
+.mainInfoSection{
+    display: flex;
+    justify-content: left;
+    color: white;
+    background-color: #000000;
+    opacity: 0.9;
+    height: 400px;
+    width: 900px;
+    margin: auto;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+.cityName{
+    font-size: 25px;
+}

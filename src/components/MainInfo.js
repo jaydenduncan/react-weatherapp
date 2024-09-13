@@ -1,8 +1,10 @@
 import React from "react";
+import "./css/MainInfo.css";
 
 function MainInfo({city, currentTemp, tempSetting, lowTemp, highTemp, icon, iconDesc}){
     return (
-        <>
+        <div className="mainInfoSection">
+            {/*}
             <p className="cityName">{city}</p>
             <p className="currentTemp">{Math.round(currentTemp)}&deg;{tempSetting}</p>
             <div className="lowhighHeading">
@@ -18,7 +20,8 @@ function MainInfo({city, currentTemp, tempSetting, lowTemp, highTemp, icon, icon
                 <img className="weatherIcon" src={icon} alt="Weather Icon" />
                 <p className="weatherIconDesc">{iconDesc}</p>
             </div>
-        </>
+            */}
+        </div>
     );
 }
 

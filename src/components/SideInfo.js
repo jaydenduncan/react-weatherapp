@@ -1,8 +1,10 @@
 import React from "react";
+import "./css/SideInfo.css";
 
 function SideInfo({windSpeed, humidity, loading}){
     return loading ? (
         <div className="extraInfo">
+            {/*}
             <div className="windSpeed">
                 <p className="windSpeedHeading">Wind Speed</p>
                 <p className="windSpeedVal">...</p>
@@ -12,9 +14,11 @@ function SideInfo({windSpeed, humidity, loading}){
                 <p className="humidityHeading">Humidity</p>
                 <p className="humidityVal">...</p>
             </div>
+            {*/}
         </div>
     ) : (
         <div className="extraInfo">
+            {/*}
             <div className="windSpeed">
                 <p className="windSpeedHeading">Wind Speed</p>
                 <p className="windSpeedVal">{windSpeed}</p>
@@ -24,6 +28,7 @@ function SideInfo({windSpeed, humidity, loading}){
                 <p className="humidityHeading">Humidity</p>
                 <p className="humidityVal">{humidity}&#37;</p>
             </div>
+            {*/}
         </div>
     );
 }

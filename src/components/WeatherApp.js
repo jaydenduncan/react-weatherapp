@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import './WeatherApp.css';
+import "./css/WeatherApp.css";
 
 import Settings from "./Settings";
 import SearchBar from "./SearchBar";
@@ -315,20 +315,33 @@ function WeatherApp() {
 
     return loading ? (
         <div className="container">
-            <Settings />
             <SearchBar getWeatherInfo={getWeatherInfo}/>
             <div className="loadingSection">
                 <p>Loading...</p>
             </div>
             <SideInfo loading={true} />
+            {/*}
+            <Settings />
+            <div className="loadingSection">
+                <p>Loading...</p>
+            </div>
+            <SideInfo loading={true} />
+            {*/}
         </div>
     ) : (
         <div className="container">
-            <Settings convert={convert} />
             <SearchBar getWeatherInfo={getWeatherInfo} showResults={showResults} hideResults={hideResults} />
             <MainInfo city={city} currentTemp={currentTemp} tempSetting={tempSetting} 
                         lowTemp={lowTemp} highTemp={highTemp} icon={icon} iconDesc={iconDesc} />
             <SideInfo windSpeed={windSpeed} humidity={humidity} loading={false} />
+            {/* }
+            <Settings convert={convert} />
+            <MainInfo city={city} currentTemp={currentTemp} tempSetting={tempSetting} 
+                        lowTemp={lowTemp} highTemp={highTemp} icon={icon} iconDesc={iconDesc} />
+            <SideInfo windSpeed={windSpeed} humidity={humidity} loading={false} />
+            {*/}
+
+            
         </div>
     );
 }

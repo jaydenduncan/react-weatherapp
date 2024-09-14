@@ -1,26 +1,24 @@
 import React from "react";
 import "./css/MainInfo.css";
 
-function MainInfo({city, currentTemp, tempSetting, lowTemp, highTemp, icon, iconDesc}){
+function MainInfo({mainInfo}){
     return (
         <div className="mainInfoSection">
-            {/*}
-            <p className="cityName">{city}</p>
-            <p className="currentTemp">{Math.round(currentTemp)}&deg;{tempSetting}</p>
+            <p className="cityName">{mainInfo.city}, {mainInfo.country}</p>
+            <p className="currentTemp">{Math.round(mainInfo.currentTemp)}&deg;{mainInfo.tempSetting}</p>
             <div className="lowhighHeading">
                 <p>Low</p>
                 <p>High</p>
             </div>
             <div className="lowhighTemps">
-                <p>{Math.round(lowTemp)}&deg;{tempSetting}</p>
+                <p>{Math.round(mainInfo.lowTemp)}&deg;{mainInfo.tempSetting}</p>
                 <p>/</p>
-                <p>{Math.round(highTemp)}&deg;{tempSetting}</p>
+                <p>{Math.round(mainInfo.highTemp)}&deg;{mainInfo.tempSetting}</p>
             </div>
             <div className="weatherIconSpace">
-                <img className="weatherIcon" src={icon} alt="Weather Icon" />
-                <p className="weatherIconDesc">{iconDesc}</p>
+                <img className="weatherIcon" src={mainInfo.icon} alt="Weather Icon" />
+                <p className="weatherIconDesc">{mainInfo.iconDesc}</p>
             </div>
-            */}
         </div>
     );
 }

@@ -56,15 +56,13 @@ function WeatherApp() {
         "50n": NIGHT_MIST
     };
 
-    const [city, setCity] = useState("");
-    const [currentTemp, setCurrentTemp] = useState(0);
-    const [lowTemp, setLowTemp] = useState(0);
-    const [highTemp, setHighTemp] = useState(0);
-    const [icon, setIcon] = useState(DAY_ICON["01d"]);
-    const [iconDesc, setIconDesc] = useState("sunny");
-    const [windSpeed, setWindSpeed] = useState(0);
-    const [humidity, setHumidity] = useState(0);
-    const [tempSetting, setTempSetting] = useState(Scale.CELSIUS);
+    const [mainInfo, setMainInfo] = useState({
+        city: "", country: "", currentTemp: 0, tempSetting: Scale.CELSIUS, lowTemp: 0, highTemp: 0, 
+        icon: DAY_ICON["01d"], iconDesc: "sunny"
+    }); 
+    const [sideInfo, setSideInfo] = useState({
+        pressure: 0, humidity: 0, windSpeed: 0, windDeg: 0, windGust: 0, sunrise: 0, sunset: 0
+    });
     const [loading, setLoading] = useState(false);
 
     // Store API key
@@ -73,24 +71,24 @@ function WeatherApp() {
     // Convert temperature from celsius to fahrenheit or vice versa
     const convert = (e) => {
         if(e.target.value == Scale.FAHRENHEIT){
-            let newCurrentTemp = ((currentTemp * 9) / 5) + 32;
-            let newLowTemp = ((lowTemp * 9) / 5) + 32;
-            let newHighTemp = ((highTemp * 9) / 5) + 32;
+            let newCurrentTemp = ((mainInfo.currentTemp * 9) / 5) + 32;
+            let newLowTemp = ((mainInfo.lowTemp * 9) / 5) + 32;
+            let newHighTemp = ((mainInfo.highTemp * 9) / 5) + 32;
+            let newMainInfo = {...mainInfo, currentTemp: newCurrentTemp, lowTemp: newLowTemp, 
+                highTemp: newHighTemp, tempSetting: Scale.FAHRENHEIT
+            }
 
-            setCurrentTemp(newCurrentTemp);
-            setLowTemp(newLowTemp);
-            setHighTemp(newHighTemp);
-            setTempSetting(Scale.FAHRENHEIT);
+            setMainInfo(newMainInfo);
         }
         else if(e.target.value == Scale.CELSIUS){
-            let newCurrentTemp = ((currentTemp - 32) * 5) / 9;
-            let newLowTemp = ((lowTemp - 32) * 5) / 9;
-            let newHighTemp = ((highTemp - 32) * 5) / 9;
+            let newCurrentTemp = ((mainInfo.currentTemp - 32) * 5) / 9;
+            let newLowTemp = ((mainInfo.lowTemp - 32) * 5) / 9;
+            let newHighTemp = ((mainInfo.highTemp - 32) * 5) / 9;
+            let newMainInfo = {...mainInfo, currentTemp: newCurrentTemp, lowTemp: newLowTemp, 
+                highTemp: newHighTemp, tempSetting: Scale.CELSIUS
+            }
 
-            setCurrentTemp(newCurrentTemp);
-            setLowTemp(newLowTemp);
-            setHighTemp(newHighTemp);
-            setTempSetting(Scale.CELSIUS);
+            setMainInfo(newMainInfo);
         }
     }
 
@@ -184,17 +182,21 @@ function WeatherApp() {
 
     // Update screen to match new data
     const updateScreen = (data) => {
-        setCity(data["name"]);
+        let newMainInfo = {...mainInfo};
+        let newSideInfo = {...sideInfo};
+        
+        newMainInfo.city = data["name"];
+        newMainInfo.country = data["sys"]["country"];
 
-        if(tempSetting == Scale.FAHRENHEIT){
+        if(mainInfo.tempSetting == Scale.FAHRENHEIT){
             // Set current temp, low temp, and high temp in degrees fahrenheit
             let newCurrentTemp = ((data["main"]["temp"] - 273.15) * 1.8) + 32;
             let newLowTemp = ((data["main"]["temp_min"] - 273.15) * 1.8) + 32;
             let newHighTemp = ((data["main"]["temp_max"] - 273.15) * 1.8) + 32;
 
-            setCurrentTemp(newCurrentTemp);
-            setLowTemp(newLowTemp);
-            setHighTemp(newHighTemp);
+            newMainInfo.currentTemp = newCurrentTemp;
+            newMainInfo.lowTemp = newLowTemp;
+            newMainInfo.highTemp = newHighTemp;
         }
         else{
             // Set current temp, low temp, and high temp in degrees celsius
@@ -202,28 +204,32 @@ function WeatherApp() {
             let newLowTemp = data["main"]["temp_min"] - 273.15;
             let newHighTemp = data["main"]["temp_max"] - 273.15;
 
-            setCurrentTemp(newCurrentTemp);
-            setLowTemp(newLowTemp);
-            setHighTemp(newHighTemp);
+            newMainInfo.currentTemp = newCurrentTemp;
+            newMainInfo.lowTemp = newLowTemp;
+            newMainInfo.highTemp = newHighTemp;
         }
 
         // Set weather icon
         let icon_code = data["weather"][0]["icon"];
         if(icon_code[icon_code.length-1] === "d"){
-            setIcon(DAY_ICON[icon_code]);
+            newMainInfo.icon = DAY_ICON[icon_code];
         }
         else if(icon_code[icon_code.length-1] === "n"){
-            setIcon(NIGHT_ICON[icon_code]);
+            newMainInfo.icon = NIGHT_ICON[icon_code];
         }
 
         // Set weather description
-        setIconDesc(data["weather"][0]["main"]);
+        newMainInfo.iconDesc = data["weather"][0]["main"];
+        
+        setMainInfo(newMainInfo); // RENDER MAIN INFO CHANGE
 
         // Set wind speed
-        setWindSpeed(Math.floor(data["wind"]["speed"]));
+        newSideInfo.windSpeed = Math.floor(data["wind"]["speed"]);
 
         // Set humidity
-        setHumidity(data["main"]["humidity"]);
+        newSideInfo.humidity = data["main"]["humidity"];
+
+        setSideInfo(newSideInfo); // RENDER SIDE INFO CHANGE
 
         // clear input textbox
         document.getElementById("inputCity").value = "";
@@ -315,32 +321,25 @@ function WeatherApp() {
 
     return loading ? (
         <div className="container">
+            {/*}
+            <Settings />
+            {*/}
+            
             <SearchBar getWeatherInfo={getWeatherInfo}/>
             <div className="loadingSection">
                 <p>Loading...</p>
             </div>
             <SideInfo loading={true} />
-            {/*}
-            <Settings />
-            <div className="loadingSection">
-                <p>Loading...</p>
-            </div>
-            <SideInfo loading={true} />
-            {*/}
         </div>
     ) : (
         <div className="container">
-            <SearchBar getWeatherInfo={getWeatherInfo} showResults={showResults} hideResults={hideResults} />
-            <MainInfo city={city} currentTemp={currentTemp} tempSetting={tempSetting} 
-                        lowTemp={lowTemp} highTemp={highTemp} icon={icon} iconDesc={iconDesc} />
-            <SideInfo windSpeed={windSpeed} humidity={humidity} loading={false} />
             {/* }
             <Settings convert={convert} />
-            <MainInfo city={city} currentTemp={currentTemp} tempSetting={tempSetting} 
-                        lowTemp={lowTemp} highTemp={highTemp} icon={icon} iconDesc={iconDesc} />
-            <SideInfo windSpeed={windSpeed} humidity={humidity} loading={false} />
             {*/}
 
+            <SearchBar getWeatherInfo={getWeatherInfo} showResults={showResults} hideResults={hideResults} />
+            <MainInfo mainInfo={mainInfo} />
+            <SideInfo sideInfo={sideInfo} loading={false} />
             
         </div>
     );

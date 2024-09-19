@@ -186,7 +186,7 @@ function WeatherApp() {
     const formatAMPM = (date) => {
         let hours = date.getHours();
         let minutes = date.getMinutes();
-        let ampm = hours >= 12 ? 'pm' : 'am';
+        let ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
         hours = hours ? hours : 12;
         minutes = minutes < 10 ? '0'+minutes : minutes;
@@ -363,13 +363,8 @@ function WeatherApp() {
             {*/}
 
             <SearchBar getWeatherInfo={getWeatherInfo}/>
-            <div className="loadingSection">
-                <p>Loading...</p>
-            </div>
-
-            {/*}
+            <MainInfo loading={true} />
             <SideInfo loading={true} />
-            {*/}
         </div>
     ) : (
         <div className="container">
@@ -378,11 +373,8 @@ function WeatherApp() {
             {*/}
 
             <SearchBar getWeatherInfo={getWeatherInfo} showResults={showResults} hideResults={hideResults} />
-            <MainInfo mainInfo={mainInfo} />
-            {/*}
+            <MainInfo mainInfo={mainInfo} loading={false} />
             <SideInfo sideInfo={sideInfo} loading={false} />
-            {*/}
-            
         </div>
     );
 }

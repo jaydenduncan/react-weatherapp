@@ -1,8 +1,22 @@
 import React from "react";
 import "./css/MainInfo.css";
 
-function MainInfo({mainInfo}){
-    return (
+function MainInfo({mainInfo, loading}){
+    return loading ? (
+        <div className="mainInfoSection">
+            <div className="weatherInfoSpace">
+                <p className="cityName">...</p>
+                <p className="currentTemp">...</p>
+                <p className="realFeelTemp">...</p>
+                <div className="lowhighTemps">
+                    <p>...</p>
+                </div>
+            </div>
+            <div className="weatherIconSpace">
+                <p className="weatherIconDesc">...</p>
+            </div>
+        </div> 
+    ) : (
         <div className="mainInfoSection">
             <div className="weatherInfoSpace">
                 <p className="cityName">{mainInfo.city}, {mainInfo.country}</p>

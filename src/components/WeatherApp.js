@@ -57,11 +57,11 @@ function WeatherApp() {
     };
 
     const [mainInfo, setMainInfo] = useState({
-        city: "", country: "", currentTemp: 0, tempSetting: Scale.CELSIUS, lowTemp: 0, highTemp: 0, 
-        icon: DAY_ICON["01d"], iconDesc: "sunny"
+        city: "", country: "", currentTemp: 0, feelsLike: 0, tempSetting: Scale.CELSIUS, 
+        lowTemp: 0, highTemp: 0, icon: DAY_ICON["01d"], iconDesc: "sunny"
     }); 
     const [sideInfo, setSideInfo] = useState({
-        pressure: 0, humidity: 0, windSpeed: 0, windDeg: 0, windGust: 0, sunrise: 0, sunset: 0
+        pressure: 0, humidity: 0, windSpeed: 0, windDeg: 0, windGust: 0, sunrise: {}, sunset: {}
     });
     const [loading, setLoading] = useState(false);
 
@@ -72,20 +72,22 @@ function WeatherApp() {
     const convert = (e) => {
         if(e.target.value == Scale.FAHRENHEIT){
             let newCurrentTemp = ((mainInfo.currentTemp * 9) / 5) + 32;
+            let newFeelsLike = ((mainInfo.feelsLike * 9) / 5) + 32;
             let newLowTemp = ((mainInfo.lowTemp * 9) / 5) + 32;
             let newHighTemp = ((mainInfo.highTemp * 9) / 5) + 32;
-            let newMainInfo = {...mainInfo, currentTemp: newCurrentTemp, lowTemp: newLowTemp, 
-                highTemp: newHighTemp, tempSetting: Scale.FAHRENHEIT
+            let newMainInfo = {...mainInfo, currentTemp: newCurrentTemp, feelsLike: newFeelsLike, 
+                lowTemp: newLowTemp, highTemp: newHighTemp, tempSetting: Scale.FAHRENHEIT
             }
 
             setMainInfo(newMainInfo);
         }
         else if(e.target.value == Scale.CELSIUS){
             let newCurrentTemp = ((mainInfo.currentTemp - 32) * 5) / 9;
+            let newFeelsLike = ((mainInfo.feelsLike - 32) * 5) / 9;
             let newLowTemp = ((mainInfo.lowTemp - 32) * 5) / 9;
             let newHighTemp = ((mainInfo.highTemp - 32) * 5) / 9;
-            let newMainInfo = {...mainInfo, currentTemp: newCurrentTemp, lowTemp: newLowTemp, 
-                highTemp: newHighTemp, tempSetting: Scale.CELSIUS
+            let newMainInfo = {...mainInfo, currentTemp: newCurrentTemp, feelsLike: newFeelsLike, 
+                lowTemp: newLowTemp, highTemp: newHighTemp, tempSetting: Scale.CELSIUS
             }
 
             setMainInfo(newMainInfo);
@@ -180,6 +182,19 @@ function WeatherApp() {
         }
     };
 
+    // Format time
+    const formatAMPM = (date) => {
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        let ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        minutes = minutes < 10 ? '0'+minutes : minutes;
+
+        let result = {hours, minutes, ampm};
+        return result;
+    };
+
     // Update screen to match new data
     const updateScreen = (data) => {
         let newMainInfo = {...mainInfo};
@@ -191,20 +206,24 @@ function WeatherApp() {
         if(mainInfo.tempSetting == Scale.FAHRENHEIT){
             // Set current temp, low temp, and high temp in degrees fahrenheit
             let newCurrentTemp = ((data["main"]["temp"] - 273.15) * 1.8) + 32;
+            let newFeelsLike = ((data["main"]["feels_like"] - 273.15) * 1.8) + 32;
             let newLowTemp = ((data["main"]["temp_min"] - 273.15) * 1.8) + 32;
             let newHighTemp = ((data["main"]["temp_max"] - 273.15) * 1.8) + 32;
 
             newMainInfo.currentTemp = newCurrentTemp;
+            newMainInfo.feelsLike = newFeelsLike;
             newMainInfo.lowTemp = newLowTemp;
             newMainInfo.highTemp = newHighTemp;
         }
         else{
             // Set current temp, low temp, and high temp in degrees celsius
             let newCurrentTemp = data["main"]["temp"] - 273.15;
+            let newFeelsLike = data["main"]["feels_like"] - 273.15;
             let newLowTemp = data["main"]["temp_min"] - 273.15;
             let newHighTemp = data["main"]["temp_max"] - 273.15;
 
             newMainInfo.currentTemp = newCurrentTemp;
+            newMainInfo.feelsLike = newFeelsLike;
             newMainInfo.lowTemp = newLowTemp;
             newMainInfo.highTemp = newHighTemp;
         }
@@ -223,11 +242,29 @@ function WeatherApp() {
         
         setMainInfo(newMainInfo); // RENDER MAIN INFO CHANGE
 
-        // Set wind speed
-        newSideInfo.windSpeed = Math.floor(data["wind"]["speed"]);
+        // Set pressure
+        newSideInfo.pressure = data["main"]["pressure"];
 
         // Set humidity
         newSideInfo.humidity = data["main"]["humidity"];
+
+        // Set wind speed
+        newSideInfo.windSpeed = Math.floor(data["wind"]["speed"]);
+
+        // Set wind degree
+        newSideInfo.windDeg = data["wind"]["deg"];
+
+        // Set wind gust
+        newSideInfo.windGust = data["wind"]["gust"];
+
+        // Set sunrise time
+        data["timezone"] += 18000; // offset by five hours (in seconds)
+        let date_sunrise = new Date((data["sys"]["sunrise"]+data["timezone"]) * 1000);
+        newSideInfo.sunrise = formatAMPM(date_sunrise);
+
+        // Set sunset time
+        let date_sunset = new Date((data["sys"]["sunset"]+data["timezone"]) * 1000);
+        newSideInfo.sunset = formatAMPM(date_sunset);
 
         setSideInfo(newSideInfo); // RENDER SIDE INFO CHANGE
 
@@ -324,12 +361,15 @@ function WeatherApp() {
             {/*}
             <Settings />
             {*/}
-            
+
             <SearchBar getWeatherInfo={getWeatherInfo}/>
             <div className="loadingSection">
                 <p>Loading...</p>
             </div>
+
+            {/*}
             <SideInfo loading={true} />
+            {*/}
         </div>
     ) : (
         <div className="container">
@@ -339,7 +379,9 @@ function WeatherApp() {
 
             <SearchBar getWeatherInfo={getWeatherInfo} showResults={showResults} hideResults={hideResults} />
             <MainInfo mainInfo={mainInfo} />
+            {/*}
             <SideInfo sideInfo={sideInfo} loading={false} />
+            {*/}
             
         </div>
     );

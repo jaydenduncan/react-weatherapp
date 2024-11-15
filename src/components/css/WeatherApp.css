@@ -23,3 +23,11 @@ html{
     margin: auto;
     border-radius: 10px;
 }
+
+.searchResult{
+    cursor: pointer;
+}
+
+.searchResult:hover{
+    color: gray;
+}

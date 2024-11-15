@@ -1,4 +1,4 @@
-.sideInfoSpace{
+.sideInfoSection{
     display: block;
     overflow: auto;
     width: 900px;
@@ -11,13 +11,13 @@
     font-size: 14px;
 }
 
-.sideInfoSpace div{
+.sideInfoSection div{
     display: grid;
     grid-template-columns: auto auto;
     justify-content: space-between;
     padding: 0px 15px;
 }
 
-.sideInfoSpace div p{
+.sideInfoSection div p{
     margin: 0;
 }

@@ -3,7 +3,7 @@ import "./css/MainInfo.css";
 
 function MainInfo({mainInfo, loading}){
     return loading ? (
-        <div className="mainInfoSection">
+        <div id="mainInfoSection" className="mainInfoSection">
             <div className="weatherInfoSpace">
                 <p className="cityName">...</p>
                 <p className="currentTemp">...</p>
@@ -17,7 +17,7 @@ function MainInfo({mainInfo, loading}){
             </div>
         </div> 
     ) : (
-        <div className="mainInfoSection">
+        <div id="mainInfoSection" className="mainInfoSection">
             <div className="weatherInfoSpace">
                 <p className="cityName">{mainInfo.city}, {mainInfo.country}</p>
                 <p className="currentTemp">{Math.round(mainInfo.currentTemp)}&deg;{mainInfo.tempSetting}</p>

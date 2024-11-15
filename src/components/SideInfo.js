@@ -3,7 +3,7 @@ import "./css/SideInfo.css";
 
 function SideInfo({sideInfo, loading}){
     return loading ? (
-        <div className="sideInfoSpace">
+        <div id="sideInfoSection" className="sideInfoSection">
             <div className="pressure">
                 <p className="pressureHeading">Pressure</p>
                 <p className="pressureVal">...</p>
@@ -35,7 +35,7 @@ function SideInfo({sideInfo, loading}){
             </div>
         </div>
     ) : (
-        <div className="sideInfoSpace">
+        <div id="sideInfoSection" className="sideInfoSection">
             <div className="pressure">
                 <p className="pressureHeading">Pressure</p>
                 <p className="pressureVal">{sideInfo.pressure}hPa</p>

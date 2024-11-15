@@ -57,7 +57,7 @@ function WeatherApp() {
     };
 
     const [mainInfo, setMainInfo] = useState({
-        city: "", country: "", currentTemp: 0, feelsLike: 0, tempSetting: Scale.CELSIUS, 
+        city: "", country: "", currentTemp: 0, feelsLike: 0, tempSetting: Scale.FAHRENHEIT, 
         lowTemp: 0, highTemp: 0, icon: DAY_ICON["01d"], iconDesc: "sunny"
     }); 
     const [sideInfo, setSideInfo] = useState({
@@ -70,7 +70,19 @@ function WeatherApp() {
 
     // Convert temperature from celsius to fahrenheit or vice versa
     const convert = (e) => {
-        if(e.target.value == Scale.FAHRENHEIT){
+        let celsiusCheck = document.getElementsByClassName("check")[0];
+        let fahrenheitCheck = document.getElementsByClassName("check")[1];
+
+        if(mainInfo.tempSetting === Scale.CELSIUS){
+            celsiusCheck.style.display = "block";
+        }
+        else fahrenheitCheck.style.display = "block";
+
+        if(e.target.id == "fahrenheitSetting"){
+            // Toggle unit checkmark
+            celsiusCheck.style.display = "none";
+            fahrenheitCheck.style.display = "block";
+
             let newCurrentTemp = ((mainInfo.currentTemp * 9) / 5) + 32;
             let newFeelsLike = ((mainInfo.feelsLike * 9) / 5) + 32;
             let newLowTemp = ((mainInfo.lowTemp * 9) / 5) + 32;
@@ -81,7 +93,10 @@ function WeatherApp() {
 
             setMainInfo(newMainInfo);
         }
-        else if(e.target.value == Scale.CELSIUS){
+        else if(e.target.id == "celsiusSetting"){
+            celsiusCheck.style.display = "block";
+            fahrenheitCheck.style.display = "none";
+
             let newCurrentTemp = ((mainInfo.currentTemp - 32) * 5) / 9;
             let newFeelsLike = ((mainInfo.feelsLike - 32) * 5) / 9;
             let newLowTemp = ((mainInfo.lowTemp - 32) * 5) / 9;
@@ -98,6 +113,20 @@ function WeatherApp() {
     const showResults = () => {
         var cityInput = document.getElementById("inputCity").value;
         var searchResultSection = document.getElementById("searchResultSection");
+
+        // Hide settings
+        let settingsIcon = document.getElementById("settingsIcon");
+        settingsIcon.style.display = "none";
+
+        let settingsSection = document.getElementById("settingsSection");
+        settingsSection.style.display = "none";
+
+        // Hide mainInfoSection and sideInfoSection
+        var mainInfoSection = document.getElementById("mainInfoSection");
+        mainInfoSection.style.display = "none";
+
+        var sideInfoSection = document.getElementById("sideInfoSection");
+        sideInfoSection.style.display = "none";
 
         function removeChildren() {
             if(document.getElementById("searchResults")){
@@ -130,6 +159,7 @@ function WeatherApp() {
 
                     for(var city of data){
                         let p = document.createElement("p");
+                        p.className = "searchResult";
                         p.innerHTML = `${city["name"]}, ${city["state"] ? city["state"] : ""} ${city["country"]}`;
                         searchResultsDiv.appendChild(p);
 
@@ -180,7 +210,22 @@ function WeatherApp() {
         if(searchResultsDiv){
             searchResultsDiv.style.display = "none";
         }
+
+        unhideWeatherInfo();
     };
+
+    const unhideWeatherInfo = () => {
+        var settingsIcon = document.getElementById("settingsIcon");
+        var mainInfoSection = document.getElementById("mainInfoSection");
+        var sideInfoSection = document.getElementById("sideInfoSection");
+
+        // Unhide settingsIcon
+        settingsIcon.style.display = "block";
+
+        // Unhide mainInfoSection and sideInfoSection
+        mainInfoSection.style.display = "flex";
+        sideInfoSection.style.display = "block";
+    }
 
     // Format time
     const formatAMPM = (date) => {
@@ -257,13 +302,15 @@ function WeatherApp() {
         // Set wind gust
         newSideInfo.windGust = data["wind"]["gust"];
 
+        let timezoneOffset = data["timezone"];
         // Set sunrise time
-        data["timezone"] += 18000; // offset by five hours (in seconds)
-        let date_sunrise = new Date((data["sys"]["sunrise"]+data["timezone"]) * 1000);
+        let sunriseTimestamp = new Date(data["sys"]["sunrise"] * 1000);
+        let date_sunrise = new Date(sunriseTimestamp.getTime() + sunriseTimestamp.getTimezoneOffset()*60*1000 + timezoneOffset*1000);
         newSideInfo.sunrise = formatAMPM(date_sunrise);
 
         // Set sunset time
-        let date_sunset = new Date((data["sys"]["sunset"]+data["timezone"]) * 1000);
+        let sunsetTimestamp = new Date(data["sys"]["sunset"] * 1000);
+        let date_sunset = new Date(sunsetTimestamp.getTime() + sunsetTimestamp.getTimezoneOffset()*60*1000 + timezoneOffset*1000);
         newSideInfo.sunset = formatAMPM(date_sunset);
 
         setSideInfo(newSideInfo); // RENDER SIDE INFO CHANGE
@@ -274,6 +321,16 @@ function WeatherApp() {
 
     // Initialize screen with data
     const initialize = () => {
+        // Check initial unit setting
+        let celsiusCheck = document.getElementsByClassName("check")[0];
+        let fahrenheitCheck = document.getElementsByClassName("check")[1];
+
+        if(mainInfo.tempSetting === Scale.CELSIUS){
+            celsiusCheck.style.display = "block";
+        }
+        else fahrenheitCheck.style.display = "block";
+
+        // Fetch initial weather data
         setLoading(true);
 
         fetch(`http://api.openweathermap.org/geo/1.0/direct?q=Cupertino&limit=5&appid=${API_KEY}`)
@@ -303,6 +360,7 @@ function WeatherApp() {
     // Fetch weather data from API
     const getWeatherInfo = (cityInfo) => {
         setLoading(true);
+        unhideWeatherInfo();
 
         if(!cityInfo['lat'] || !cityInfo['lon']){
             let inputCity = document.getElementById("inputCity").value;
@@ -358,21 +416,17 @@ function WeatherApp() {
 
     return loading ? (
         <div className="container">
-            {/*}
             <Settings />
-            {*/}
 
-            <SearchBar getWeatherInfo={getWeatherInfo}/>
+            <SearchBar />
             <MainInfo loading={true} />
             <SideInfo loading={true} />
         </div>
     ) : (
         <div className="container">
-            {/* }
             <Settings convert={convert} />
-            {*/}
 
-            <SearchBar getWeatherInfo={getWeatherInfo} showResults={showResults} hideResults={hideResults} />
+            <SearchBar showResults={showResults} hideResults={hideResults} mainInfo={mainInfo} />
             <MainInfo mainInfo={mainInfo} loading={false} />
             <SideInfo sideInfo={sideInfo} loading={false} />
         </div>

@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap');
 
+.topHeading{
+    display: flex;
+    justify-content: center;
+}
+
+.searchSection{
+    margin-right: 15px;
+}
+
 .searchSection input{
     font-family: FontAwesome;
     border: none;
@@ -12,4 +21,10 @@
     opacity: 1;
     border-radius: 10px;
     color: white;
+}
+
+.settingsIcon{
+    margin-top: 25px;
+    cursor: pointer;
+    font-size: 20px;
 }

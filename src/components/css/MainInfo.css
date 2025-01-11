@@ -3,8 +3,8 @@
     justify-content: left;
     color: white;
     background-color: #000000;
-    height: 400px;
-    width: 900px;
+    height: 45%;
+    width: 70%;
     margin: auto;
     margin-top: 10px;
     border-radius: 10px;
@@ -16,15 +16,19 @@
 }
 
 .cityName{
-    font-size: 40px;
+    font-size: 3vh;
 }
 
 .currentTemp{
-    font-size: 55px;
+    font-size: 6vh;
 }
 
 .realFeelTemp{
-    font-size: 14px;
+    font-size: 1.6vh;
+}
+
+.lowhighTemps{
+    font-size: 1.6vh;
 }
 
 .weatherIconSpace{

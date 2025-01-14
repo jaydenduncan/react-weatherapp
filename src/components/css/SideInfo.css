@@ -21,3 +21,13 @@
 .sideInfoSection div p{
     margin: 0;
 }
+
+@media screen and (min-height: 1000px){
+    .sideInfoSection{
+        margin-top: 75px;
+    }
+    .sideInfoSection div{
+        padding: 5px 15px;
+        font-size: 16px;
+    }
+}

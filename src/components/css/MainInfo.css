@@ -37,7 +37,7 @@
 }
 
 .weatherIcon{
-    height: 80%;
+    height: 75%;
     width: 90%;
 }
 
@@ -46,6 +46,27 @@
 }
 
 @media screen and (max-width: 900px){
+    /* Hide weather icon and desc and remove space */
+    .weatherIcon{
+        display: none;
+        position: absolute; 
+        left: -999em;
+    }
+    .weatherIconDesc{
+        display: none;
+        position: absolute; 
+        left: -999em;
+    }
+
+    /* Center weather info */
+    .weatherInfoSpace{
+        margin-left: 15%;
+        margin-right: auto;
+        width: 70%;
+    }
+}
+
+@media screen and (min-height: 1050px){
     /* Hide weather icon and desc and remove space */
     .weatherIcon{
         display: none;

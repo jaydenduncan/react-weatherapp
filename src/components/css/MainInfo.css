@@ -37,10 +37,31 @@
 }
 
 .weatherIcon{
-    height: 250px;
-    width: 250px;
+    height: 80%;
+    width: 90%;
 }
 
 .weatherIconDesc{
     font-size: 18px;
+}
+
+@media screen and (max-width: 900px){
+    /* Hide weather icon and desc and remove space */
+    .weatherIcon{
+        display: none;
+        position: absolute; 
+        left: -999em;
+    }
+    .weatherIconDesc{
+        display: none;
+        position: absolute; 
+        left: -999em;
+    }
+
+    /* Center weather info */
+    .weatherInfoSpace{
+        margin-left: 15%;
+        margin-right: auto;
+        width: 70%;
+    }
 }

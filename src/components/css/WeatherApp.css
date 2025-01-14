@@ -31,3 +31,9 @@ html{
 .searchResult:hover{
     color: gray;
 }
+
+@media screen and (max-height: 750px){
+    .container{
+        overflow: scroll;
+    }
+}

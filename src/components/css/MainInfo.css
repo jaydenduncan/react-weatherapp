@@ -45,12 +45,21 @@
     font-size: 18px;
 }
 
+@media screen and (max-width: 1249px) and (min-height: 1200px){
+    .weatherIcon{
+        height: 60%;
+    }
+    .weatherIconDesc{
+        font-size: 30px;
+    }
+}
+
 @media screen and (max-width: 900px){
     .mainInfoSection{
         display: block;
     }
 
-    /* Hide weather icon and desc and remove space */
+    /* Hide weather icon and remove space */
     .weatherIcon{
         display: none;
         position: absolute; 

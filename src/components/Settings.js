@@ -6,10 +6,12 @@ import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 function Settings({convert}){
     return (
-        <div id="settingsSection" className="settingsSection">
-            <p id="celsiusSetting" onClick={convert}><FontAwesomeIcon className="check" icon={faCheck} />Celsius</p>
-            <hr />
-            <p id="fahrenheitSetting" onClick={convert}><FontAwesomeIcon className="check" icon={faCheck} />Fahrenheit</p>
+        <div id="settingsSectionWrap" className="settingsSectionWrap">
+            <div id="settingsSection" className="settingsSection">
+                <p id="celsiusSetting" onClick={convert}><FontAwesomeIcon className="check" icon={faCheck} />Celsius</p>
+                <hr />
+                <p id="fahrenheitSetting" onClick={convert}><FontAwesomeIcon className="check" icon={faCheck} />Fahrenheit</p>
+            </div>
         </div>
     );
 }

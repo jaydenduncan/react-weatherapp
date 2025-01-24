@@ -1,10 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap');
 
+.settingsSectionWrap {
+    position: absolute;
+    top: 50px;
+    z-index: 1000;
+    padding: 1px;
+    display: inline-block;
+} 
+
 .settingsSection{
     display: none;
     position: absolute;
-    top: 50px;
-    left: 775px;
+    top: 10%;
+    left: 50%;
     height: fit-content;
     width: 175px;
     border-radius: 10px;

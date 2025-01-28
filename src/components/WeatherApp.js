@@ -58,7 +58,7 @@ function WeatherApp() {
 
     const [mainInfo, setMainInfo] = useState({
         city: "", country: "", currentTemp: 0, feelsLike: 0, tempSetting: Scale.FAHRENHEIT, 
-        lowTemp: 0, highTemp: 0, icon: DAY_ICON["01d"], iconDesc: "sunny"
+        lowTemp: 0, highTemp: 0, icon: DAY_ICON["01d"], iconDesc: "sunny", misDisplay: ""
     }); 
     const [sideInfo, setSideInfo] = useState({
         pressure: 0, humidity: 0, windSpeed: 0, windDeg: 0, windGust: 0, sunrise: {}, sunset: {}
@@ -191,7 +191,7 @@ function WeatherApp() {
             if(cityInput)
                 fetchData();
             else
-                hideResults();
+                hideResults(mainInfo.misDisplay);
         }
         else{
             var searchResultsDiv = document.getElementById("searchResults");
@@ -199,22 +199,23 @@ function WeatherApp() {
             if(cityInput)
                 fetchData();
             else
-                hideResults();
+                hideResults(mainInfo.misDisplay);
         }
     };
 
     // Hide search results when text box is not in focus
-    const hideResults = () => {
+    const hideResults = (misDisplay) => {
+        misDisplay = (misDisplay === undefined) ? "flex" : misDisplay;
         var searchResultsDiv = document.getElementById("searchResults");
     
         if(searchResultsDiv){
             searchResultsDiv.style.display = "none";
         }
 
-        unhideWeatherInfo();
+        unhideWeatherInfo(misDisplay);
     };
 
-    const unhideWeatherInfo = () => {
+    const unhideWeatherInfo = (misDisplay) => {
         var settingsIcon = document.getElementById("settingsIcon");
         var mainInfoSection = document.getElementById("mainInfoSection");
         var sideInfoSection = document.getElementById("sideInfoSection");
@@ -223,7 +224,7 @@ function WeatherApp() {
         settingsIcon.style.display = "block";
 
         // Unhide mainInfoSection and sideInfoSection
-        mainInfoSection.style.display = "flex";
+        mainInfoSection.style.display = misDisplay;
         sideInfoSection.style.display = "block";
     }
 
@@ -330,6 +331,15 @@ function WeatherApp() {
         }
         else fahrenheitCheck.style.display = "block";
 
+        // Get initial main info section display property value
+        var mainInfoSection = document.getElementById("mainInfoSection");
+        var obj = getComputedStyle(mainInfoSection); // Main Info Section Styles
+        var misDisplay = obj.getPropertyValue("display");
+
+        let newMainInfo = {...mainInfo};
+        newMainInfo.misDisplay = misDisplay;
+        setMainInfo(newMainInfo);
+
         // Fetch initial weather data
         setLoading(true);
 
@@ -360,7 +370,7 @@ function WeatherApp() {
     // Fetch weather data from API
     const getWeatherInfo = (cityInfo) => {
         setLoading(true);
-        unhideWeatherInfo();
+        unhideWeatherInfo(mainInfo.misDisplay);
 
         if(!cityInfo['lat'] || !cityInfo['lon']){
             let inputCity = document.getElementById("inputCity").value;
